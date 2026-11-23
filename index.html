@@ -387,25 +387,10 @@
 
   <script>
     // رابط Google Apps Script Web App للربط المباشر مع Google Sheets
-    const GOOGLE_SHEETS_API_URL = "YOUR_GOOGLE_APPS_SCRIPT_WEB_APP_URL_HERE";
-
-    // بيانات تجريبية تحاكي الجداول الموجودة في Google Sheets (stud & tansik_data)
-    const mockStudents = {
-      "30501150101234": {
-        name: "أحمد محمود عبد الرحمن",
-        department: "تكنولوجيا الكهرباء - الفرقة الثانية",
-        phone: "01012345678",
-        source: "stud"
-      },
-      "30605200105678": {
-        name: "سارة خالد إبراهيم",
-        department: "الإلكترونيات والتحكم - الفرقة الأولى (مستجد)",
-        phone: "",
-        source: "tansik_data"
-      }
-    };
+    const GOOGLE_SHEETS_API_URL = "https://script.google.com/macros/s/AKfycbzFMn632ZBpayFinioPTkQa3Vq3533radix2IZakPWKL8i9DkyIjKNT3XmY-xCmcIak/exec";
 
     let currentStudent = null;
+    let verifiedNid = "";
 
     function switchView(viewName) {
       document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
@@ -413,20 +398,40 @@
       window.scrollTo({ top: 0, behavior: 'smooth' });
     }
 
-    function handleLogin(e) {
+    async function handleLogin(e) {
       e.preventDefault();
       const nid = document.getElementById('login-nid').value.trim();
+      const pass = document.getElementById('login-pass').value.trim();
       if (nid.length !== 14) {
         alert("يرجى إدخال رقم قومي صحيح مكون من 14 رقماً.");
         return;
       }
-      currentStudent = mockStudents[nid] || {
-        name: "طالب المعهد الفني الصناعي بشبرا",
-        department: "تكنولوجيا الميكانيكا - الفرقة الأولى",
-        phone: "01000000000"
-      };
-      updateNavbarLoggedIn();
-      switchView('dashboard');
+
+      try {
+        const res = await fetch(`${GOOGLE_SHEETS_API_URL}?action=searchStudent&nid=${encodeURIComponent(nid)}`);
+        const data = await res.json();
+
+        if (!data.found || !data.student) {
+          alert("الرقم القومي غير مسجل. إذا كنت طالباً جديداً اضغط على (تسجيل جديد / التحقق بالرقم القومي).");
+          return;
+        }
+
+        if (data.student.password_hash && String(data.student.password_hash).trim() !== "" && String(data.student.password_hash).trim() !== pass) {
+          alert("كلمة المرور غير صحيحة.");
+          return;
+        }
+
+        currentStudent = {
+          national_id: nid,
+          name: data.student.full_name || "طالب المعهد",
+          department: data.student.department || data.student.nominated_department || "",
+          phone: data.student.phone || ""
+        };
+        updateNavbarLoggedIn();
+        switchView('dashboard');
+      } catch (err) {
+        alert("تعذر الاتصال بقاعدة بيانات Google Sheets. تأكد من صلاحية النشر (Anyone).");
+      }
     }
 
     function updateNavbarLoggedIn() {
@@ -446,21 +451,30 @@
       switchView('home');
     }
 
-    function searchStudentRecord() {
+    async function searchStudentRecord() {
       const nid = document.getElementById('verify-nid').value.trim();
       if (nid.length !== 14) {
         alert("يرجى إدخال الرقم القومي المكوّن من 14 رقماً.");
         return;
       }
-      const found = mockStudents[nid] || {
-        name: "محمد علي حسن (سجل تجريبي)",
-        department: "التبريد وتكييف الهواء - الفرقة الأولى",
-        phone: ""
-      };
-      document.getElementById('st-name').value = found.name;
-      document.getElementById('st-dept').value = found.department;
-      document.getElementById('st-phone').value = found.phone;
-      goToStep(2);
+
+      try {
+        const res = await fetch(`${GOOGLE_SHEETS_API_URL}?action=searchStudent&nid=${encodeURIComponent(nid)}`);
+        const data = await res.json();
+
+        if (!data.found || !data.student) {
+          alert("لم يتم العثور على بيانات لهذا الرقم القومي في سجلات المعهد.");
+          return;
+        }
+
+        verifiedNid = nid;
+        document.getElementById('st-name').value = data.student.full_name || '';
+        document.getElementById('st-dept').value = data.student.department || data.student.nominated_department || '';
+        document.getElementById('st-phone').value = data.student.phone || '';
+        goToStep(2);
+      } catch (err) {
+        alert("تعذر الاتصال بقاعدة بيانات Google Sheets. تأكد من نشر Web App بصلاحية Anyone.");
+      }
     }
 
     function goToStep(step) {
@@ -470,18 +484,61 @@
       });
     }
 
-    function completeActivation() {
-      alert("تم حفظ وتحديث بياناتك بنجاح! يمكنك الآن الدخول إلى بوابة الخدمات.");
+    async function completeActivation() {
+      const phone = document.getElementById('st-phone').value.trim();
+      const password = document.getElementById('st-newpass').value.trim();
+
+      try {
+        await fetch(GOOGLE_SHEETS_API_URL, {
+          method: 'POST',
+          mode: 'no-cors',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            action: 'updateStudent',
+            national_id: verifiedNid,
+            phone: phone,
+            password: password
+          })
+        });
+      } catch (e) {}
+
+      alert("تم حفظ وتحديث بياناتك بنجاح في Google Sheets!");
       currentStudent = {
+        national_id: verifiedNid,
         name: document.getElementById('st-name').value,
-        department: document.getElementById('st-dept').value
+        department: document.getElementById('st-dept').value,
+        phone: phone
       };
       updateNavbarLoggedIn();
       goToStep(1);
       switchView('dashboard');
     }
 
-    function openService(type) {
+    async function submitSheetRequest(requestType, targetEntity, notes) {
+      if (!currentStudent || !currentStudent.national_id) {
+        alert("يرجى تسجيل الدخول أولاً.");
+        return;
+      }
+      try {
+        await fetch(GOOGLE_SHEETS_API_URL, {
+          method: 'POST',
+          mode: 'no-cors',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            action: 'createRequest',
+            national_id: currentStudent.national_id,
+            request_type: requestType,
+            target_entity: targetEntity,
+            notes: notes
+          })
+        });
+        alert("تم تسجيل طلبك بنجاح في ورقة requests داخل Google Sheets!");
+      } catch (e) {
+        alert("حدث خطأ أثناء إرسال الطلب.");
+      }
+    }
+
+    async function openService(type) {
       if (!currentStudent && type !== 'results') {
         switchView('login');
         return;
@@ -494,18 +551,39 @@
       const content = document.getElementById('service-content');
       box.style.display = 'block';
 
+      if (type === 'results') {
+        title.textContent = "النتائج الأكاديمية للفصل الدراسي";
+        content.innerHTML = "<p>جاري تحميل النتائج من Google Sheets...</p>";
+        box.scrollIntoView({ behavior: 'smooth' });
+        try {
+          const nid = currentStudent ? currentStudent.national_id : "";
+          const res = await fetch(`${GOOGLE_SHEETS_API_URL}?action=getResults&nid=${encodeURIComponent(nid)}`);
+          const data = await res.json();
+          if (data.results && data.results.length > 0) {
+            const rowsHtml = data.results.map(r => `
+              <tr>
+                <td>${r.subject_name || ''}</td>
+                <td>${r.midterm_score || 0}</td>
+                <td>${r.practical_score || 0}</td>
+                <td>${r.final_score || 0}</td>
+                <td>${r.total_score || 0}</td>
+                <td>${r.grade || ''}</td>
+              </tr>
+            `).join('');
+            content.innerHTML = `<table>
+              <thead><tr><th>المقرر الدراسي</th><th>أعمال السنة</th><th>العملي</th><th>التحريري</th><th>المجموع</th><th>التقدير</th></tr></thead>
+              <tbody>${rowsHtml}</tbody>
+            </table>`;
+          } else {
+            content.innerHTML = "<p>لا توجد نتائج مسجلة لهذا الرقم القومي حالياً في ورقة results.</p>";
+          }
+        } catch (err) {
+          content.innerHTML = "<p>تعذر تحميل النتائج من Google Sheets.</p>";
+        }
+        return;
+      }
+
       const views = {
-        results: {
-          t: "النتائج الأكاديمية للفصل الدراسي",
-          c: `<table>
-                <thead><tr><th>المقرر الدراسي</th><th>أعمال السنة</th><th>العملي</th><th>التحريري</th><th>المجموع</th><th>التقدير</th></tr></thead>
-                <tbody>
-                  <tr><td>دوائر كهربائية وإلكترونية</td><td>28</td><td>19</td><td>45</td><td>92</td><td>ممتاز</td></tr>
-                  <tr><td>رسم فني وهندسي</td><td>25</td><td>18</td><td>40</td><td>83</td><td>جيد جداً</td></tr>
-                  <tr><td>تكنولوجيا الورش والقياسات</td><td>27</td><td>20</td><td>43</td><td>90</td><td>ممتاز</td></tr>
-                </tbody>
-              </table>`
-        },
         schedules: {
           t: "الجدول الدراسي الأسبوعي",
           c: `<table>
@@ -520,14 +598,14 @@
         certificates: {
           t: "طلب إصدار شهادة نجاح مؤقتة / بيان درجات",
           c: `<div class="form-group"><label>نوع الشهادة المطلوبة</label>
-              <select class="form-control"><option>شهادة نجاح مؤقتة</option><option>بيان درجات معتمد</option></select></div>
-              <button class="btn btn-primary" onclick="alert('تم تسجيل طلب الشهادة بنجاح في ورقة requests!')">إرسال الطلب</button>`
+              <select id="cert-type" class="form-control"><option>شهادة نجاح مؤقتة</option><option>بيان درجات معتمد</option></select></div>
+              <button class="btn btn-primary" onclick="submitSheetRequest(document.getElementById('cert-type').value, 'شؤون الطلاب', '')">إرسال الطلب</button>`
         },
         letters: {
           t: "طلب إفادة قيد أو خطاب تدريب",
           c: `<div class="form-group"><label>الجهة الموجه إليها الخطاب</label>
-              <input type="text" class="form-control" placeholder="مثال: هيئة مترو الأنفاق / شركة الكهرباء"></div>
-              <button class="btn btn-primary" onclick="alert('تم إرسال طلب الإفادة بنجاح!')">تقديم الطلب</button>`
+              <input type="text" id="letter-target" class="form-control" placeholder="مثال: هيئة مترو الأنفاق / شركة الكهرباء"></div>
+              <button class="btn btn-primary" onclick="submitSheetRequest('إفادة قيد / خطاب', document.getElementById('letter-target').value, '')">تقديم الطلب</button>`
         },
         payments: {
           t: "حالة المصروفات والمدفوعات الدراسية",
@@ -549,10 +627,10 @@
         support: {
           t: "الدعم الفني والاستفسارات",
           c: `<div class="form-group"><label>موضوع الاستفسار</label>
-              <input type="text" class="form-control" placeholder="اكتب عنوان المشكلة..."></div>
+              <input type="text" id="sup-subj" class="form-control" placeholder="اكتب عنوان المشكلة..."></div>
               <div class="form-group"><label>التفاصيل</label>
-              <textarea class="form-control" rows="3" placeholder="اشرح استفسارك لشؤون الطلاب أو الدعم الفني..."></textarea></div>
-              <button class="btn btn-primary" onclick="alert('تم إرسال تذكرة الدعم الفني بنجاح!')">إرسال الرسالة</button>`
+              <textarea id="sup-msg" class="form-control" rows="3" placeholder="اشرح استفسارك لشؤون الطلاب أو الدعم الفني..."></textarea></div>
+              <button class="btn btn-primary" onclick="submitSheetRequest('دعم فني: ' + document.getElementById('sup-subj').value, 'الدعم الفني', document.getElementById('sup-msg').value)">إرسال الرسالة</button>`
         }
       };
 
@@ -563,4 +641,4 @@
   </script>
 </body>
 </html>
-Refining Final Output Format
+
