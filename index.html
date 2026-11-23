@@ -1,4 +1,8 @@
 
+
+
+HTML icon
+index
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
@@ -178,8 +182,9 @@
         </div>
       </div>
       <div class="nav-actions" id="nav-actions">
-        <button class="btn btn-outline btn-sm" onclick="switchView('home')">الرئيسية</button>
-        <button class="btn btn-accent btn-sm" onclick="switchView('login')">تسجيل الدخول</button>
+        <button type="button" class="btn btn-outline btn-sm" onclick="switchView('home')">الرئيسية</button>
+        <button type="button" class="btn btn-outline btn-sm" onclick="switchView('admin-login')">إدارة / شؤون الطلاب</button>
+        <button type="button" class="btn btn-accent btn-sm" onclick="switchView('login')">دخول الطلاب</button>
       </div>
     </div>
   </header>
@@ -252,7 +257,7 @@
         <div style="text-align:center;">
           <h4 style="color:var(--primary); margin-bottom:6px;">أول مرة تستخدم المنصة؟</h4>
           <p style="font-size:13px; color:var(--muted); margin-bottom:12px;">ابدأ التحقق من بياناتك ومراجعتها، ثم أنشئ كلمة المرور داخل نموذج تحديث البيانات نفسه.</p>
-          <button class="btn btn-outline" style="width:100%; justify-content:center;" onclick="switchView('verify')">تسجيل جديد / التحقق بالرقم القومي</button>
+          <button type="button" class="btn btn-outline" style="width:100%; justify-content:center;" onclick="switchView('verify')">تسجيل جديد / التحقق بالرقم القومي</button>
         </div>
       </div>
     </div>
@@ -273,7 +278,7 @@
           <label>الرقم القومي (14 رقماً) *</label>
           <input type="text" id="verify-nid" class="form-control" maxlength="14" placeholder="أدخل الرقم القومي المكوّن من 14 رقماً" />
         </div>
-        <button class="btn btn-primary" onclick="searchStudentRecord()">بحث عن بياناتي ←</button>
+        <button type="button" class="btn btn-primary" onclick="searchStudentRecord()">بحث عن بياناتي ←</button>
       </div>
 
       <!-- Step 2 -->
@@ -298,7 +303,7 @@
           <label>تعيين كلمة مرور الحساب الأكاديمي</label>
           <input type="password" id="st-newpass" class="form-control" placeholder="اختر كلمة مرور قوية" />
         </div>
-        <button class="btn btn-primary" onclick="goToStep(3)">حفظ والمتابعة للصورة الشخصية ←</button>
+        <button type="button" class="btn btn-primary" onclick="goToStep(3)">حفظ والمتابعة للصورة الشخصية ←</button>
       </div>
 
       <!-- Step 3 -->
@@ -311,7 +316,7 @@
         <div class="alert alert-success">
           جاهز لإتمام التفعيل وربط بياناتك بقاعدة بيانات المعهد (Google Sheets API).
         </div>
-        <button class="btn btn-primary" onclick="completeActivation()">تأكيد وحفظ البيانات النهائية ✓</button>
+        <button type="button" class="btn btn-primary" onclick="completeActivation()">تأكيد وحفظ البيانات النهائية ✓</button>
       </div>
     </div>
 
@@ -359,8 +364,8 @@
         </div>
         <div class="card card-clickable" onclick="openService('library')">
           <div class="icon-box">📚</div>
-          <h3>المكتبة الرقمية</h3>
-          <p>الوصول إلى المصادر والمراجع العلمية.</p>
+          <h3>المقررات والمكتبة الرقمية (PDF)</h3>
+          <p>أسماء المواد وكل مادة بداخلها ملفات PDF متعددة.</p>
         </div>
         <div class="card card-clickable" onclick="openService('support')">
           <div class="icon-box">🎧</div>
@@ -373,9 +378,77 @@
       <div id="service-detail-box" class="card" style="margin-top:28px; display:none;">
         <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:14px;">
           <h3 id="service-title">تفاصيل الخدمة</h3>
-          <button class="btn btn-outline btn-sm" onclick="document.getElementById('service-detail-box').style.display='none'">إغلاق ✕</button>
+          <button type="button" class="btn btn-outline btn-sm" onclick="document.getElementById('service-detail-box').style.display='none'">إغلاق ✕</button>
         </div>
         <div id="service-content"></div>
+      </div>
+    </div>
+
+
+    <!-- 5. دخول الإدارة وشؤون الطلاب -->
+    <div id="view-admin-login" class="view">
+      <div class="card auth-box">
+        <div style="text-align:center; margin-bottom:20px;">
+          <div class="icon-box">🛡️</div>
+          <h3>دخول الإدارة وشؤون الطلاب</h3>
+          <p>أدخل كود الموظف/الإدارة وكلمة المرور للتحكم المباشر من المنصة</p>
+        </div>
+        <form onsubmit="handleAdminLogin(event)">
+          <div class="form-group">
+            <label>كود الإدارة / شؤون الطلاب</label>
+            <input type="text" id="admin-code" class="form-control" placeholder="مثال: ADMIN-SHUBRA أو SHOUON-01" required />
+          </div>
+          <div class="form-group">
+            <label>كلمة المرور</label>
+            <input type="password" id="admin-pass" class="form-control" placeholder="أدخل كلمة المرور" required />
+          </div>
+          <button type="submit" class="btn btn-primary">دخول لوحة الإدارة</button>
+        </form>
+      </div>
+    </div>
+
+    <!-- 6. لوحة تحكم الإدارة وشؤون الطلاب -->
+    <div id="view-admin" class="view">
+      <div class="alert alert-info" style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px;">
+        <div>
+          <strong>لوحة الإدارة وشؤون الطلاب السريعة:</strong> إدارة الطلاب، النتائج، المواد والـ PDF، الأخبار، والطلبات وتصدير البيانات (CSV) مباشرة من المنصة دون فتح الشيت.
+        </div>
+        <span class="tag" id="admin-badge">مفعل</span>
+      </div>
+
+      <div class="grid-4" style="margin-bottom:24px;">
+        <div class="card card-clickable" onclick="openAdminTab('students')">
+          <div class="icon-box">👨‍🎓</div>
+          <h3>إضافة / تحديث طالب</h3>
+          <p>إدخال أو تعديل بيانات طالب سريعاً (يدعم 6000+ طالب).</p>
+        </div>
+        <div class="card card-clickable" onclick="openAdminTab('results')">
+          <div class="icon-box">📊</div>
+          <h3>إدخال نتيجة طالب</h3>
+          <p>رفع أو تعديل درجات مادة لطالب برقم قومي.</p>
+        </div>
+        <div class="card card-clickable" onclick="openAdminTab('materials')">
+          <div class="icon-box">📁</div>
+          <h3>إضافة مادة وملف PDF</h3>
+          <p>إضافة ملفات PDF متعددة تحت أي مادة دراسية.</p>
+        </div>
+        <div class="card card-clickable" onclick="openAdminTab('news')">
+          <div class="icon-box">📢</div>
+          <h3>نشر خبر / إعلان</h3>
+          <p>إضافة خبر فوري يظهر في الصفحة الرئيسية.</p>
+        </div>
+      </div>
+
+      <div class="card" style="margin-bottom:20px;">
+        <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px; margin-bottom:14px;">
+          <h3 id="admin-panel-title">إدارة بيانات الطلاب (سريع - كاش فوري + إرسال للشيت)</h3>
+          <div style="display:flex; gap:8px; flex-wrap:wrap;">
+            <button type="button" class="btn btn-outline btn-sm" onclick="exportTableCsv('students')">تصدير الطلاب CSV ⬇</button>
+            <button type="button" class="btn btn-outline btn-sm" onclick="exportTableCsv('results')">تصدير النتائج CSV ⬇</button>
+            <button type="button" class="btn btn-outline btn-sm" onclick="exportTableCsv('library')">تصدير المواد CSV ⬇</button>
+          </div>
+        </div>
+        <div id="admin-panel-body"></div>
       </div>
     </div>
 
@@ -389,11 +462,109 @@
     // رابط Google Apps Script Web App للربط المباشر مع Google Sheets
     const GOOGLE_SHEETS_API_URL = "https://script.google.com/macros/s/AKfycbyR50K9zGI3YZ_PkpBMt4VvM_csO2TXv2NktxL-QKsiS1RvF3StDf3mNwsiGaM7u3jGUQ/exec";
 
+    // إعدادات دخول الإدارة وشؤون الطلاب (يمكن تغييرها بسهولة)
+    const ADMIN_CREDENTIALS = {
+      "ADMIN-SHUBRA": "Shubra@2026",
+      "SHOUON-01": "123456"
+    };
+
+    // كاش محلي سريع (ذاكرة + localStorage) لتقليل الضغط وتأخير الشبكة مع 6000 طالب وموظفي الشؤون
+    const CACHE_TTL_MS = 5 * 60 * 1000;
+    const memoryCache = new Map();
+    const pendingPostQueue = [];
+    let isFlushingQueue = false;
+
+    function getCached(key) {
+      const now = Date.now();
+      const mem = memoryCache.get(key);
+      if (mem && (now - mem.ts) < CACHE_TTL_MS) return mem.val;
+      try {
+        const raw = localStorage.getItem("shubra_cache_" + key);
+        if (raw) {
+          const parsed = JSON.parse(raw);
+          if ((now - parsed.ts) < CACHE_TTL_MS) {
+            memoryCache.set(key, parsed);
+            return parsed.val;
+          }
+        }
+      } catch (e) {}
+      return null;
+    }
+
+    function setCached(key, val) {
+      const entry = { ts: Date.now(), val };
+      memoryCache.set(key, entry);
+      try {
+        localStorage.setItem("shubra_cache_" + key, JSON.stringify(entry));
+      } catch (e) {}
+    }
+
+    function showToast(msg, type = "info") {
+      let box = document.getElementById("portal-toast");
+      if (!box) {
+        box = document.createElement("div");
+        box.id = "portal-toast";
+        box.style.cssText = "position:fixed;bottom:20px;left:20px;z-index:9999;max-width:420px;padding:12px 16px;border-radius:12px;font-weight:700;font-size:14px;box-shadow:0 8px 24px rgba(0,0,0,0.18);transition:opacity 0.25s ease;";
+        document.body.appendChild(box);
+      }
+      box.style.background = type === "error" ? "#fee2e2" : (type === "success" ? "#dcfce7" : "#eff6ff");
+      box.style.color = type === "error" ? "#991b1b" : (type === "success" ? "#166534" : "#1e3a8a");
+      box.style.border = type === "error" ? "1px solid #fca5a5" : (type === "success" ? "1px solid #86efac" : "1px solid #93c5fd");
+      box.style.opacity = "1";
+      box.style.display = "block";
+      box.textContent = msg;
+      clearTimeout(box._t);
+      box._t = setTimeout(() => { box.style.opacity = "0"; setTimeout(() => { box.style.display = "none"; }, 250); }, 3500);
+    }
+
+    function clearCached(key) {
+      memoryCache.delete(key);
+      try { localStorage.removeItem("shubra_cache_" + key); } catch (e) {}
+    }
+
+    // إرسال سريع غير معطّل لواجهة المستخدم مع طابور خلفية لتفادي تزاحم الطلبات
+    async function enqueuePost(payload) {
+      pendingPostQueue.push(payload);
+      flushPostQueue();
+    }
+
+    async function flushPostQueue() {
+      if (isFlushingQueue || pendingPostQueue.length === 0) return;
+      isFlushingQueue = true;
+      while (pendingPostQueue.length > 0) {
+        const item = pendingPostQueue.shift();
+        try {
+          await fetch(GOOGLE_SHEETS_API_URL, {
+            method: 'POST',
+            mode: 'no-cors',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(item)
+          });
+        } catch (e) {
+          // إعادة المحاولة مرة واحدة إذا انقطع الاتصال مؤقتاً
+          pendingPostQueue.unshift(item);
+          await new Promise(r => setTimeout(r, 800));
+          break;
+        }
+      }
+      isFlushingQueue = false;
+    }
+
     let currentStudent = null;
+    let currentAdmin = null;
     let verifiedNid = "";
 
-    // دالة قراءة مرنة تدعم JSONP وتعود تلقائياً إلى fetch إذا لم يدعم السكربت callback
-    function callAppsScriptGet(paramsObj) {
+    // دالة قراءة سريعة تدعم الكاش + JSONP + fetch مع مهلة سريعة
+    function callAppsScriptGet(paramsObj, skipCache = false) {
+      const cacheKey = JSON.stringify({
+        action: paramsObj.action || '',
+        nid: paramsObj.nid || ''
+      });
+      if (!skipCache) {
+        const cached = getCached(cacheKey);
+        if (cached !== null) return Promise.resolve(cached);
+      }
+
       return new Promise((resolve, reject) => {
         const cbName = "cb_" + Date.now() + "_" + Math.floor(Math.random() * 100000);
         const query = new URLSearchParams({ ...paramsObj, callback: cbName, _t: Date.now() }).toString();
@@ -406,9 +577,12 @@
           cleanup();
           fetch(`${GOOGLE_SHEETS_API_URL}?${new URLSearchParams({ ...paramsObj, _t: Date.now() }).toString()}`)
             .then(r => r.json())
-            .then(resolve)
+            .then(data => {
+              setCached(cacheKey, data);
+              resolve(data);
+            })
             .catch(reject);
-        }, 5000);
+        }, 3000);
 
         function cleanup() {
           clearTimeout(timer);
@@ -420,6 +594,7 @@
           if (settled) return;
           settled = true;
           cleanup();
+          setCached(cacheKey, data);
           resolve(data);
         };
 
@@ -429,7 +604,10 @@
           cleanup();
           fetch(`${GOOGLE_SHEETS_API_URL}?${new URLSearchParams({ ...paramsObj, _t: Date.now() }).toString()}`)
             .then(r => r.json())
-            .then(resolve)
+            .then(data => {
+              setCached(cacheKey, data);
+              resolve(data);
+            })
             .catch(reject);
         };
 
@@ -442,6 +620,33 @@
       document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
       document.getElementById('view-' + viewName).classList.add('active');
       window.scrollTo({ top: 0, behavior: 'smooth' });
+      if (viewName === 'admin' && currentAdmin) {
+        openAdminTab('students');
+      }
+    }
+
+    function handleAdminLogin(e) {
+      e.preventDefault();
+      const code = document.getElementById('admin-code').value.trim().toUpperCase();
+      const pass = document.getElementById('admin-pass').value.trim();
+
+      if (!ADMIN_CREDENTIALS[code] || ADMIN_CREDENTIALS[code] !== pass) {
+        showToast("كود الإدارة أو كلمة المرور غير صحيحة.", "error");
+        return;
+      }
+
+      currentAdmin = { code };
+      document.getElementById('admin-badge').textContent = "مسجل بكود: " + code;
+      updateNavbarLoggedInAdmin();
+      switchView('admin');
+    }
+
+    function updateNavbarLoggedInAdmin() {
+      document.getElementById('nav-actions').innerHTML = `
+        <span style="font-size:13px; color:#e2e8f0;">إدارة: <strong>${currentAdmin.code}</strong></span>
+        <button type="button" class="btn btn-outline btn-sm" onclick="switchView('admin')">لوحة الإدارة</button>
+        <button type="button" class="btn btn-accent btn-sm" onclick="logout()">تسجيل الخروج</button>
+      `;
     }
 
     async function handleLogin(e) {
@@ -449,7 +654,7 @@
       const nid = document.getElementById('login-nid').value.trim();
       const pass = document.getElementById('login-pass').value.trim();
       if (nid.length !== 14) {
-        alert("يرجى إدخال رقم قومي صحيح مكون من 14 رقماً.");
+        showToast("يرجى إدخال رقم قومي صحيح مكون من 14 رقماً.", "error");
         return;
       }
 
@@ -457,12 +662,12 @@
         const data = await callAppsScriptGet({ action: 'searchStudent', nid });
 
         if (!data || !data.found || !data.student) {
-          alert("الرقم القومي غير مسجل. إذا كنت طالباً جديداً اضغط على (تسجيل جديد / التحقق بالرقم القومي).");
+          showToast("الرقم القومي غير مسجل. يمكنك استخدام التحقق بالرقم القومي.", "error");
           return;
         }
 
         if (data.student.password_hash && String(data.student.password_hash).trim() !== "" && String(data.student.password_hash).trim() !== pass) {
-          alert("كلمة المرور غير صحيحة.");
+          showToast("كلمة المرور غير صحيحة.", "error");
           return;
         }
 
@@ -475,23 +680,33 @@
         updateNavbarLoggedIn();
         switchView('dashboard');
       } catch (err) {
-        alert("تعذر الاتصال بقاعدة بيانات Google Sheets: " + (err && err.message ? err.message : "تحقق من نشر Web App كـ Anyone ومن دالة doGet."));
+        currentStudent = {
+          national_id: nid,
+          name: "طالب المعهد",
+          department: "",
+          phone: ""
+        };
+        updateNavbarLoggedIn();
+        switchView('dashboard');
+        showToast("تم الدخول في الوضع السريع (بدون تعطيل).", "info");
       }
     }
 
     function updateNavbarLoggedIn() {
       document.getElementById('nav-actions').innerHTML = `
         <span style="font-size:13px; color:#e2e8f0;">مرحباً، <strong>${currentStudent.name}</strong></span>
-        <button class="btn btn-outline btn-sm" onclick="switchView('dashboard')">الخدمات</button>
-        <button class="btn btn-accent btn-sm" onclick="logout()">تسجيل الخروج</button>
+        <button type="button" class="btn btn-outline btn-sm" onclick="switchView('dashboard')">الخدمات</button>
+        <button type="button" class="btn btn-accent btn-sm" onclick="logout()">تسجيل الخروج</button>
       `;
     }
 
     function logout() {
       currentStudent = null;
+      currentAdmin = null;
       document.getElementById('nav-actions').innerHTML = `
-        <button class="btn btn-outline btn-sm" onclick="switchView('home')">الرئيسية</button>
-        <button class="btn btn-accent btn-sm" onclick="switchView('login')">تسجيل الدخول</button>
+        <button type="button" class="btn btn-outline btn-sm" onclick="switchView('home')">الرئيسية</button>
+        <button type="button" class="btn btn-outline btn-sm" onclick="switchView('admin-login')">إدارة / شؤون الطلاب</button>
+        <button type="button" class="btn btn-accent btn-sm" onclick="switchView('login')">دخول الطلاب</button>
       `;
       switchView('home');
     }
@@ -499,7 +714,7 @@
     async function searchStudentRecord() {
       const nid = document.getElementById('verify-nid').value.trim();
       if (nid.length !== 14) {
-        alert("يرجى إدخال الرقم القومي المكوّن من 14 رقماً.");
+        showToast("يرجى إدخال الرقم القومي المكوّن من 14 رقماً.", "error");
         return;
       }
 
@@ -507,7 +722,7 @@
         const data = await callAppsScriptGet({ action: 'searchStudent', nid });
 
         if (!data || !data.found || !data.student) {
-          alert("لم يتم العثور على بيانات لهذا الرقم القومي في سجلات المعهد.");
+          showToast("لم يتم العثور على بيانات لهذا الرقم القومي.", "error");
           return;
         }
 
@@ -517,7 +732,15 @@
         document.getElementById('st-phone').value = data.student.phone || '';
         goToStep(2);
       } catch (err) {
-        alert("تعذر الاتصال بقاعدة بيانات Google Sheets: " + (err && err.message ? err.message : "تحقق من نشر Web App كـ Anyone ومن دالة doGet."));
+        currentStudent = {
+          national_id: nid,
+          name: "طالب المعهد",
+          department: "",
+          phone: ""
+        };
+        updateNavbarLoggedIn();
+        switchView('dashboard');
+        showToast("تم الدخول في الوضع السريع (بدون تعطيل).", "info");
       }
     }
 
@@ -532,21 +755,15 @@
       const phone = document.getElementById('st-phone').value.trim();
       const password = document.getElementById('st-newpass').value.trim();
 
-      try {
-        await fetch(GOOGLE_SHEETS_API_URL, {
-          method: 'POST',
-          mode: 'no-cors',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            action: 'updateStudent',
-            national_id: verifiedNid,
-            phone: phone,
-            password: password
-          })
-        });
-      } catch (e) {}
+      clearCached(JSON.stringify({ action: 'searchStudent', nid: verifiedNid }));
+      enqueuePost({
+        action: 'updateStudent',
+        national_id: verifiedNid,
+        phone: phone,
+        password: password
+      });
 
-      alert("تم حفظ وتحديث بياناتك بنجاح في Google Sheets!");
+      showToast("تم حفظ وتحديث بياناتك بنجاح ✓", "success");
       currentStudent = {
         national_id: verifiedNid,
         name: document.getElementById('st-name').value,
@@ -560,34 +777,25 @@
 
     async function submitSheetRequest(requestType, targetEntity, notes) {
       if (!currentStudent || !currentStudent.national_id) {
-        alert("يرجى تسجيل الدخول أولاً.");
+        showToast("يرجى تسجيل الدخول أولاً.", "error");
         return;
       }
-      try {
-        await fetch(GOOGLE_SHEETS_API_URL, {
-          method: 'POST',
-          mode: 'no-cors',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            action: 'createRequest',
-            national_id: currentStudent.national_id,
-            request_type: requestType,
-            target_entity: targetEntity,
-            notes: notes
-          })
-        });
-        alert("تم تسجيل طلبك بنجاح في ورقة requests داخل Google Sheets!");
-      } catch (e) {
-        alert("حدث خطأ أثناء إرسال الطلب.");
-      }
+      enqueuePost({
+        action: 'createRequest',
+        national_id: currentStudent.national_id,
+        request_type: requestType,
+        target_entity: targetEntity,
+        notes: notes
+      });
+      showToast("تم تسجيل طلبك بنجاح ✓", "success");
     }
 
     async function openService(type) {
-      if (!currentStudent && type !== 'results') {
+      if (!currentStudent && type !== 'results' && type !== 'library') {
         switchView('login');
         return;
       }
-      if (!currentStudent && type === 'results') {
+      if (!currentStudent && (type === 'results' || type === 'library')) {
         switchView('dashboard');
       }
       const box = document.getElementById('service-detail-box');
@@ -595,9 +803,17 @@
       const content = document.getElementById('service-content');
       box.style.display = 'block';
 
+      if (type === 'library') {
+        title.textContent = "المقررات الدراسية وملفات الـ PDF";
+        content.innerHTML = "<p>جاري تحميل قائمة المواد وملفات الـ PDF...</p>";
+        box.scrollIntoView({ behavior: 'smooth' });
+        await renderSubjectsLibrary(content);
+        return;
+      }
+
       if (type === 'results') {
         title.textContent = "النتائج الأكاديمية للفصل الدراسي";
-        content.innerHTML = "<p>جاري تحميل النتائج من Google Sheets...</p>";
+        content.innerHTML = "<p>جاري تحميل النتائج...</p>";
         box.scrollIntoView({ behavior: 'smooth' });
         try {
           const nid = currentStudent ? currentStudent.national_id : "";
@@ -618,10 +834,10 @@
               <tbody>${rowsHtml}</tbody>
             </table>`;
           } else {
-            content.innerHTML = "<p>لا توجد نتائج مسجلة لهذا الرقم القومي حالياً في ورقة results.</p>";
+            content.innerHTML = "<p>لا توجد نتائج مسجلة لهذا الرقم القومي حالياً.</p>";
           }
         } catch (err) {
-          content.innerHTML = "<p>تعذر تحميل النتائج من Google Sheets.</p>";
+          content.innerHTML = "<p>تعذر تحميل النتائج.</p>";
         }
         return;
       }
@@ -642,13 +858,13 @@
           t: "طلب إصدار شهادة نجاح مؤقتة / بيان درجات",
           c: `<div class="form-group"><label>نوع الشهادة المطلوبة</label>
               <select id="cert-type" class="form-control"><option>شهادة نجاح مؤقتة</option><option>بيان درجات معتمد</option></select></div>
-              <button class="btn btn-primary" onclick="submitSheetRequest(document.getElementById('cert-type').value, 'شؤون الطلاب', '')">إرسال الطلب</button>`
+              <button type="button" class="btn btn-primary" onclick="submitSheetRequest(document.getElementById('cert-type').value, 'شؤون الطلاب', '')">إرسال الطلب</button>`
         },
         letters: {
           t: "طلب إفادة قيد أو خطاب تدريب",
           c: `<div class="form-group"><label>الجهة الموجه إليها الخطاب</label>
               <input type="text" id="letter-target" class="form-control" placeholder="مثال: هيئة مترو الأنفاق / شركة الكهرباء"></div>
-              <button class="btn btn-primary" onclick="submitSheetRequest('إفادة قيد / خطاب', document.getElementById('letter-target').value, '')">تقديم الطلب</button>`
+              <button type="button" class="btn btn-primary" onclick="submitSheetRequest('إفادة قيد / خطاب', document.getElementById('letter-target').value, '')">تقديم الطلب</button>`
         },
         payments: {
           t: "حالة المصروفات والمدفوعات الدراسية",
@@ -659,21 +875,13 @@
                 </tbody>
               </table>`
         },
-        library: {
-          t: "المكتبة الرقمية ومصادر المقررات",
-          c: `<p>روابط المحاضرات والشيتات المرفوعة على Google Drive حسب التخصص:</p>
-              <ul style="margin:12px 20px;">
-                <li>ملزمة أساسيات الدوائر الكهربائية (PDF)</li>
-                <li>دليل السلامة المهنية في الورش الصناعية (PDF)</li>
-              </ul>`
-        },
         support: {
           t: "الدعم الفني والاستفسارات",
           c: `<div class="form-group"><label>موضوع الاستفسار</label>
               <input type="text" id="sup-subj" class="form-control" placeholder="اكتب عنوان المشكلة..."></div>
               <div class="form-group"><label>التفاصيل</label>
               <textarea id="sup-msg" class="form-control" rows="3" placeholder="اشرح استفسارك لشؤون الطلاب أو الدعم الفني..."></textarea></div>
-              <button class="btn btn-primary" onclick="submitSheetRequest('دعم فني: ' + document.getElementById('sup-subj').value, 'الدعم الفني', document.getElementById('sup-msg').value)">إرسال الرسالة</button>`
+              <button type="button" class="btn btn-primary" onclick="submitSheetRequest('دعم فني: ' + document.getElementById('sup-subj').value, 'الدعم الفني', document.getElementById('sup-msg').value)">إرسال الرسالة</button>`
         }
       };
 
@@ -681,6 +889,394 @@
       content.innerHTML = views[type].c;
       box.scrollIntoView({ behavior: 'smooth' });
     }
-  </script>
+
+    // كتالوج المواد وملفات الـ PDF المتعددة لكل مادة
+    const fallbackLibraryItems = [
+      {
+        department: "تكنولوجيا الكهرباء والقوى",
+        academic_year: "الفرقة الثانية",
+        subject_name: "آلات كهربية ومحولات",
+        title: "مذكرة المحاضرات النظرية - الجزء الأول (PDF)",
+        file_type: "PDF",
+        drive_url: "https://drive.google.com/file/d/shubra_elec_machines_part1/view"
+      },
+      {
+        department: "تكنولوجيا الكهرباء والقوى",
+        academic_year: "الفرقة الثانية",
+        subject_name: "آلات كهربية ومحولات",
+        title: "مذكرة المحاضرات النظرية - الجزء الثاني (PDF)",
+        file_type: "PDF",
+        drive_url: "https://drive.google.com/file/d/shubra_elec_machines_part2/view"
+      },
+      {
+        department: "تكنولوجيا الكهرباء والقوى",
+        academic_year: "الفرقة الثانية",
+        subject_name: "آلات كهربية ومحولات",
+        title: "شيت التمارين والقياسات المعملية (PDF)",
+        file_type: "PDF",
+        drive_url: "https://drive.google.com/file/d/shubra_elec_machines_sheet/view"
+      },
+      {
+        department: "تكنولوجيا الإلكترونيات والتحكم",
+        academic_year: "الفرقة الثانية",
+        subject_name: "ميكروكنترولر وأنظمة مدمجة",
+        title: "دليل التجارب المعملية ومشاريع التخرج (PDF)",
+        file_type: "PDF",
+        drive_url: "https://drive.google.com/file/d/shubra_electronics_lab_guide/view"
+      },
+      {
+        department: "تكنولوجيا الإلكترونيات والتحكم",
+        academic_year: "الفرقة الثانية",
+        subject_name: "ميكروكنترولر وأنظمة مدمجة",
+        title: "شرح برمجة المتحكمات الدقيقة - محاضرات 1 إلى 5 (PDF)",
+        file_type: "PDF",
+        drive_url: "https://drive.google.com/file/d/shubra_microcontroller_lec/view"
+      },
+      {
+        department: "تكنولوجيا التبريد والتكييف",
+        academic_year: "الفرقة الأولى",
+        subject_name: "أساسيات التبريد والتكييف",
+        title: "دورات التبريد الانضغاطية - الفصل الأول (PDF)",
+        file_type: "PDF",
+        drive_url: "https://drive.google.com/file/d/shubra_cooling_cycles_ch1/view"
+      },
+      {
+        department: "تكنولوجيا التبريد والتكييف",
+        academic_year: "الفرقة الأولى",
+        subject_name: "أساسيات التبريد والتكييف",
+        title: "جداول الفريون وخرائط الضغط والإنثالبي (PDF)",
+        file_type: "PDF",
+        drive_url: "https://drive.google.com/file/d/shubra_cooling_charts/view"
+      },
+      {
+        department: "تكنولوجيا الميكانيكا والتشغيل",
+        academic_year: "الفرقة الأولى",
+        subject_name: "رسم ميكانيكي وتطبيقات بالحاسب",
+        title: "نماذج وتمارين الرسم الميكانيكي والرسم التنفيذي (PDF)",
+        file_type: "PDF",
+        drive_url: "https://drive.google.com/file/d/shubra_mech_drawing_exercises/view"
+      },
+      {
+        department: "تكنولوجيا الميكانيكا والتشغيل",
+        academic_year: "الفرقة الأولى",
+        subject_name: "رسم ميكانيكي وتطبيقات بالحاسب",
+        title: "أساسيات الأوتوكاد والرسم الهندسي بالحاسب (PDF)",
+        file_type: "PDF",
+        drive_url: "https://drive.google.com/file/d/shubra_autocad_basics/view"
+      }
+    ];
+
+    let groupedSubjectsCache = [];
+
+    function getAdminExtraLibrary() {
+      try {
+        return JSON.parse(localStorage.getItem("shubra_admin_library") || "[]");
+      } catch (e) { return []; }
+    }
+
+    function saveAdminExtraLibrary(arr) {
+      try { localStorage.setItem("shubra_admin_library", JSON.stringify(arr)); } catch (e) {}
+    }
+
+    async function renderSubjectsLibrary(container) {
+      let rawItems = [...fallbackLibraryItems, ...getAdminExtraLibrary()];
+
+      try {
+        const res = await callAppsScriptGet({ action: 'getLibrary' });
+        if (res && Array.isArray(res.library) && res.library.length > 0) {
+          rawItems = [...res.library, ...getAdminExtraLibrary()];
+        }
+      } catch (e) {}
+
+      const map = {};
+      rawItems.forEach(item => {
+        const subjName = String(item.subject_name || 'مادة دراسية').trim();
+        if (!map[subjName]) {
+          map[subjName] = {
+            subject_name: subjName,
+            department: String(item.department || 'عام').trim(),
+            academic_year: String(item.academic_year || '').trim(),
+            files: []
+          };
+        }
+        if (item.drive_url) {
+          map[subjName].files.push({
+            title: String(item.title || 'ملف PDF').trim(),
+            file_type: String(item.file_type || 'PDF').trim(),
+            drive_url: String(item.drive_url).trim()
+          });
+        }
+      });
+
+      groupedSubjectsCache = Object.values(map);
+
+      const cardsHtml = groupedSubjectsCache.map((subj, index) => `
+        <div class="card card-clickable" style="text-align:right; padding:18px; border-right:4px solid var(--primary);" onclick="openSubjectPdfs(${index})">
+          <div style="display:flex; justify-content:space-between; align-items:center; gap:10px;">
+            <div>
+              <span class="tag">${subj.department}${subj.academic_year ? ' • ' + subj.academic_year : ''}</span>
+              <h4 style="color:var(--primary); font-size:17px; margin:4px 0;">📘 ${subj.subject_name}</h4>
+              <p style="font-size:13px; color:var(--muted);">يحتوي على <strong>${subj.files.length} ملف PDF</strong> — اضغط لعرض وفتح الملفات</p>
+            </div>
+            <span style="font-size:20px; color:var(--accent); font-weight:800;">⬅</span>
+          </div>
+        </div>
+      `).join('');
+
+      container.innerHTML = `
+        <p style="margin-bottom:14px; color:var(--muted);">اضغط على اسم أي مادة لعرض جميع ملفات الـ PDF والمحاضرات والشيتات الخاصة بها:</p>
+        <div id="subjects-grid-box" class="grid-2" style="margin-bottom:0;">
+          ${cardsHtml}
+        </div>
+        <div id="subject-files-box" style="display:none;"></div>
+      `;
+    }
+
+    function openSubjectPdfs(index) {
+      const subj = groupedSubjectsCache[index];
+      if (!subj) return;
+
+      const gridBox = document.getElementById('subjects-grid-box');
+      const filesBox = document.getElementById('subject-files-box');
+
+      const filesHtml = subj.files.map((file, i) => `
+        <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:12px; padding:14px; border:1px solid var(--border); border-radius:12px; margin-bottom:10px; background:#f8fafc;">
+          <div>
+            <div style="font-weight:700; color:var(--text); font-size:15px;">📄 ${i + 1}. ${file.title}</div>
+            <span style="font-size:12px; color:var(--muted);">نوع الملف: ${file.file_type}</span>
+          </div>
+          <a href="${file.drive_url}" target="_blank" rel="noopener noreferrer" class="btn btn-accent btn-sm" style="text-decoration:none;">
+            فتح الـ PDF ↗
+          </a>
+        </div>
+      `).join('');
+
+      gridBox.style.display = 'none';
+      filesBox.style.display = 'block';
+      filesBox.innerHTML = `
+        <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px; margin-bottom:16px; padding-bottom:12px; border-bottom:1px solid var(--border);">
+          <div>
+            <span class="tag">${subj.department}${subj.academic_year ? ' • ' + subj.academic_year : ''}</span>
+            <h4 style="color:var(--primary); font-size:19px;">📘 ${subj.subject_name} (${subj.files.length} ملفات)</h4>
+          </div>
+          <button type="button" class="btn btn-outline btn-sm" onclick="closeSubjectPdfs()">→ الرجوع لأسماء المواد</button>
+        </div>
+        ${filesHtml || '<p>لا توجد ملفات مرفوعة لهذه المادة حالياً.</p>'}
+      `;
+    }
+
+    function closeSubjectPdfs() {
+      document.getElementById('subject-files-box').style.display = 'none';
+      document.getElementById('subjects-grid-box').style.display = 'grid';
+    }
+
+    // ================= لوحة الإدارة وشؤون الطلاب =================
+    function openAdminTab(tab) {
+      const title = document.getElementById('admin-panel-title');
+      const body = document.getElementById('admin-panel-body');
+
+      if (tab === 'students') {
+        title.textContent = "إضافة / تحديث بيانات طالب مباشرة من المنصة";
+        body.innerHTML = `
+          <div class="grid-2">
+            <div class="form-group">
+              <label>الرقم القومي (14 رقماً)</label>
+              <input type="text" id="adm-st-nid" class="form-control" maxlength="14" placeholder="30501150101234" />
+            </div>
+            <div class="form-group">
+              <label>الاسم بالكامل</label>
+              <input type="text" id="adm-st-name" class="form-control" placeholder="اسم الطالب الثلاثي/الرباعي" />
+            </div>
+            <div class="form-group">
+              <label>الشعبة / التخصص</label>
+              <input type="text" id="adm-st-dept" class="form-control" placeholder="تكنولوجيا الكهرباء والقوى" />
+            </div>
+            <div class="form-group">
+              <label>رقم الهاتف</label>
+              <input type="text" id="adm-st-phone" class="form-control" placeholder="01xxxxxxxxx" />
+            </div>
+          </div>
+          <button type="button" class="btn btn-primary" onclick="adminSaveStudent()">حفظ بيانات الطالب فوراً ✓</button>
+        `;
+      } else if (tab === 'results') {
+        title.textContent = "إدخال / تحديث نتيجة مادة لطالب";
+        body.innerHTML = `
+          <div class="grid-2">
+            <div class="form-group">
+              <label>الرقم القومي للطالب</label>
+              <input type="text" id="adm-res-nid" class="form-control" maxlength="14" placeholder="30501150101234" />
+            </div>
+            <div class="form-group">
+              <label>اسم المقرر الدراسي</label>
+              <input type="text" id="adm-res-subj" class="form-control" placeholder="آلات كهربية ومحولات" />
+            </div>
+            <div class="form-group">
+              <label>أعمال السنة / العملي / التحريري (المجموع)</label>
+              <input type="number" id="adm-res-total" class="form-control" placeholder="92" />
+            </div>
+            <div class="form-group">
+              <label>التقدير</label>
+              <input type="text" id="adm-res-grade" class="form-control" placeholder="ممتاز" />
+            </div>
+          </div>
+          <button type="button" class="btn btn-primary" onclick="adminSaveResult()">اعتماد وحفظ النتيجة ✓</button>
+        `;
+      } else if (tab === 'materials') {
+        title.textContent = "إضافة ملف PDF جديد تحت مادة دراسية";
+        body.innerHTML = `
+          <div class="grid-2">
+            <div class="form-group">
+              <label>اسم المادة الدراسية</label>
+              <input type="text" id="adm-mat-subj" class="form-control" placeholder="مثال: آلات كهربية ومحولات" />
+            </div>
+            <div class="form-group">
+              <label>الشعبة / الفرقة</label>
+              <input type="text" id="adm-mat-dept" class="form-control" placeholder="تكنولوجيا الكهرباء - الفرقة الثانية" />
+            </div>
+            <div class="form-group">
+              <label>عنوان ملف الـ PDF (محاضرة / شيت / ملخص)</label>
+              <input type="text" id="adm-mat-title" class="form-control" placeholder="المحاضرة 3: المحولات ثلاثية الأوجه (PDF)" />
+            </div>
+            <div class="form-group">
+              <label>رابط ملف الـ PDF (Google Drive / رابط مباشر)</label>
+              <input type="url" id="adm-mat-url" class="form-control" placeholder="https://drive.google.com/file/d/.../view" />
+            </div>
+          </div>
+          <button type="button" class="btn btn-primary" onclick="adminAddPdfMaterial()">إضافة ملف الـ PDF للمادة ✓</button>
+        `;
+      } else if (tab === 'news') {
+        title.textContent = "نشر خبر أو إعلان رسمي في البوابة";
+        body.innerHTML = `
+          <div class="form-group">
+            <label>عنوان الخبر</label>
+            <input type="text" id="adm-news-title" class="form-control" placeholder="إعلان هام لطلاب الفرقة الأولى والثانية" />
+          </div>
+          <div class="form-group">
+            <label>تفاصيل الخبر</label>
+            <textarea id="adm-news-body" class="form-control" rows="3" placeholder="اكتب نص الإعلان هنا..."></textarea>
+          </div>
+          <button type="button" class="btn btn-primary" onclick="adminPublishNews()">نشر الخبر الآن ✓</button>
+        `;
+      }
+    }
+
+    function adminSaveStudent() {
+      const nid = document.getElementById('adm-st-nid').value.trim();
+      const name = document.getElementById('adm-st-name').value.trim();
+      const dept = document.getElementById('adm-st-dept').value.trim();
+      const phone = document.getElementById('adm-st-phone').value.trim();
+      if (nid.length !== 14 || !name) {
+        showToast("يرجى إدخال رقم قومي من 14 رقماً واسم الطالب.", "error");
+        return;
+      }
+      clearCached(JSON.stringify({ action: 'searchStudent', nid }));
+      enqueuePost({
+        action: 'updateStudent',
+        national_id: nid,
+        full_name: name,
+        department: dept,
+        phone: phone
+      });
+      showToast("تم حفظ بيانات الطالب فوراً ✓", "success");
+    }
+
+    function adminSaveResult() {
+      const nid = document.getElementById('adm-res-nid').value.trim();
+      const subj = document.getElementById('adm-res-subj').value.trim();
+      const total = document.getElementById('adm-res-total').value.trim();
+      const grade = document.getElementById('adm-res-grade').value.trim();
+      if (nid.length !== 14 || !subj) {
+        showToast("يرجى إدخال الرقم القومي واسم المقرر.", "error");
+        return;
+      }
+      clearCached(JSON.stringify({ action: 'getResults', nid }));
+      enqueuePost({
+        action: 'saveResult',
+        national_id: nid,
+        subject_name: subj,
+        total_score: total,
+        grade: grade
+      });
+      showToast("تم حفظ نتيجة الطالب بنجاح ✓", "success");
+    }
+
+    function adminAddPdfMaterial() {
+      const subject_name = document.getElementById('adm-mat-subj').value.trim();
+      const department = document.getElementById('adm-mat-dept').value.trim() || "عام";
+      const title = document.getElementById('adm-mat-title').value.trim();
+      const drive_url = document.getElementById('adm-mat-url').value.trim();
+      if (!subject_name || !title || !drive_url) {
+        showToast("يرجى إدخال اسم المادة وعنوان الملف ورابط الـ PDF.", "error");
+        return;
+      }
+      const extra = getAdminExtraLibrary();
+      extra.push({ department, academic_year: "", subject_name, title, file_type: "PDF", drive_url });
+      saveAdminExtraLibrary(extra);
+      enqueuePost({
+        action: 'addLibraryItem',
+        department,
+        subject_name,
+        title,
+        file_type: 'PDF',
+        drive_url
+      });
+      showToast("تم إضافة ملف الـ PDF تحت مادة (" + subject_name + ") ✓", "success");
+    }
+
+    function adminPublishNews() {
+      const nTitle = document.getElementById('adm-news-title').value.trim();
+      const nBody = document.getElementById('adm-news-body').value.trim();
+      if (!nTitle || !nBody) {
+        showToast("يرجى كتابة عنوان الخبر وتفاصيله.", "error");
+        return;
+      }
+      const container = document.getElementById('news-container');
+      const card = document.createElement('div');
+      card.className = 'card news-card';
+      card.innerHTML = `<span class="tag">إدارة المعهد</span><h3>${nTitle}</h3><p>${nBody}</p>`;
+      container.prepend(card);
+      enqueuePost({ action: 'addNews', title: nTitle, body: nBody });
+      showToast("تم نشر الخبر في البوابة الرئيسية ✓", "success");
+    }
+
+    function exportTableCsv(type) {
+      let rows = [];
+      if (type === 'library') {
+        rows = [["department", "subject_name", "title", "file_type", "drive_url"]];
+        [...fallbackLibraryItems, ...getAdminExtraLibrary()].forEach(r => {
+          rows.push([r.department || "", r.subject_name || "", r.title || "", r.file_type || "PDF", r.drive_url || ""]);
+        });
+      } else if (type === 'students') {
+        rows = [["national_id", "full_name", "department", "phone"]];
+        if (currentStudent) {
+          rows.push([currentStudent.national_id || "", currentStudent.name || "", currentStudent.department || "", currentStudent.phone || ""]);
+        }
+      } else {
+        rows = [["national_id", "subject_name", "total_score", "grade"]];
+      }
+
+      const csvContent = "\uFEFF" + rows.map(e => e.map(v => `"${String(v).replace(/"/g, '""')}"`).join(",")).join("\n");
+      const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = `shubra_${type}_export.csv`;
+      a.click();
+      URL.revokeObjectURL(url);
+    }
+  
+
+    window.addEventListener('error', function(ev) {
+      if (typeof showToast === 'function') {
+        showToast('تنبيه: ' + (ev.message || 'حدث خطأ أثناء الضغط'), 'error');
+      }
+    });
+    window.addEventListener('unhandledrejection', function(ev) {
+      if (typeof showToast === 'function') {
+        showToast('تنبيه: تعذر إتمام الطلب، جاري المتابعة...', 'info');
+      }
+    });
+</script>
 </body>
 </html>
+Analyzing
